@@ -49,6 +49,7 @@ const RATE_WINDOW_SECONDS = 600; // 10 minutos
 const RATE_LIMITS: Record<string, number> = {
   "analyze-brief": 5,
   "generate-logo": 40,
+  "checkout-confirm": 10,
 };
 const DEFAULT_RATE_LIMIT = 5;
 
