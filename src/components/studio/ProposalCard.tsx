@@ -1,4 +1,5 @@
 import type { Proposal } from "./types";
+import { Watermark } from "./Watermark";
 
 type Props = {
   proposal: Proposal;
@@ -16,16 +17,21 @@ export function ProposalCard({ proposal, selected, onSelect, onToggleFavorite }:
       <button
         type="button"
         onClick={onSelect}
-        className="checkerboard block aspect-square w-full bg-background/60"
+        className="checkerboard relative block aspect-square w-full overflow-hidden bg-background/60"
       >
         {version ? (
-          <img
-            src={version.src}
-            alt={`Proposta ${proposal.name} para a nova logo`}
-            className={`h-full w-full object-contain transition-[filter] duration-500 ${
-              version.final ? "blur-0" : "blur-xl"
-            }`}
-          />
+          <>
+            <img
+              src={version.src}
+              alt={`Proposta ${proposal.name} para a nova logo`}
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+              className={`pointer-events-none h-full w-full select-none object-contain transition-[filter] duration-500 ${
+                version.final ? "blur-0" : "blur-xl"
+              }`}
+            />
+            {version.final && <Watermark />}
+          </>
         ) : (
           <span className="flex h-full items-center justify-center px-4 text-xs text-muted-foreground">
             {proposal.status === "error" ? proposal.error : "Desenhando…"}
