@@ -13,10 +13,6 @@ export async function saveCleanImage(base64: string): Promise<string> {
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  void db.rpc("purge_old_logo_assets").then(
-    () => {},
-    () => {},
-  );
   return data.id as string;
 }
 
