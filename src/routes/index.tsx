@@ -9,7 +9,7 @@ import { HowItWorks } from "@/components/studio/HowItWorks";
 import { BeforeForm } from "@/components/studio/BeforeForm";
 import { GenerationProgress } from "@/components/studio/GenerationProgress";
 import type { Analysis, Brief, Proposal } from "@/components/studio/types";
-import { streamLogo } from "@/lib/streamImage";
+import { generateLogo, purchaseAndFetchClean } from "@/lib/generateLogo";
 import { downloadPng, downloadSvg } from "@/lib/exportLogo";
 
 const PRICE = "R$ 79,00";
@@ -45,7 +45,7 @@ function Index() {
   const [analyzing, setAnalyzing] = useState(false);
   const [refining, setRefining] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paidIds, setPaidIds] = useState<string[]>([]);
+  const [cleanByAsset, setCleanByAsset] = useState<Record<string, string>>({});
   const [paywallFormat, setPaywallFormat] = useState<"png" | "svg" | null>(null);
   const [paying, setPaying] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -54,7 +54,9 @@ function Index() {
   const selected = proposals.find((p) => p.id === selectedId) ?? null;
   const generating = proposals.some((p) => p.status === "pending" || p.status === "streaming");
   const doneCount = proposals.filter((p) => p.status === "done" || p.status === "error").length;
-  const paid = selected ? paidIds.includes(selected.id) : false;
+  const currentVersion = selected?.versions[selected.currentIndex] ?? null;
+  const currentAssetId = currentVersion?.assetId ?? null;
+  const paid = currentAssetId ? Boolean(cleanByAsset[currentAssetId]) : false;
 
   function patch(id: string, update: (p: Proposal) => Proposal) {
     setProposals((list) => list.map((p) => (p.id === id ? update(p) : p)));
@@ -63,13 +65,16 @@ function Index() {
   async function runProposal(p: Proposal, b: Brief, ref: string | null) {
     patch(p.id, (x) => ({ ...x, status: "streaming" }));
     try {
-      await streamLogo({ prompt: p.prompt, refImage: ref, fast: true }, (src, final) => {
-        patch(p.id, (x) => {
-          const versions = [...x.versions];
-          versions[0] = { src, label: "Proposta inicial", final };
-          return { ...x, versions, currentIndex: 0 };
-        });
+      const { assetId, preview } = await generateLogo({
+        prompt: p.prompt,
+        refImage: ref,
+        fast: true,
       });
+      patch(p.id, (x) => ({
+        ...x,
+        versions: [{ src: preview, label: "Proposta inicial", final: true, assetId }],
+        currentIndex: 0,
+      }));
       patch(p.id, (x) => ({ ...x, status: "done" }));
     } catch (e) {
       patch(p.id, (x) => ({
