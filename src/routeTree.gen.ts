@@ -15,6 +15,9 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateLogoRouteImport } from './routes/api/generate-logo'
+import { Route as ApiDownloadLogoRouteImport } from './routes/api/download-logo'
+import { Route as ApiCheckoutConfirmRouteImport } from './routes/api/checkout-confirm'
+import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
 import { Route as ApiAnalyzeBriefRouteImport } from './routes/api/analyze-brief'
 
 const TermosRoute = TermosRouteImport.update({
@@ -47,6 +50,21 @@ const ApiGenerateLogoRoute = ApiGenerateLogoRouteImport.update({
   path: '/api/generate-logo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDownloadLogoRoute = ApiDownloadLogoRouteImport.update({
+  id: '/api/download-logo',
+  path: '/api/download-logo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCheckoutConfirmRoute = ApiCheckoutConfirmRouteImport.update({
+  id: '/api/checkout-confirm',
+  path: '/api/checkout-confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCheckoutRoute = ApiCheckoutRouteImport.update({
+  id: '/api/checkout',
+  path: '/api/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAnalyzeBriefRoute = ApiAnalyzeBriefRouteImport.update({
   id: '/api/analyze-brief',
   path: '/api/analyze-brief',
@@ -60,6 +78,9 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
+  '/api/checkout': typeof ApiCheckoutRoute
+  '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
+  '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +90,9 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
+  '/api/checkout': typeof ApiCheckoutRoute
+  '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
+  '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRoutesById {
@@ -79,6 +103,9 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
+  '/api/checkout': typeof ApiCheckoutRoute
+  '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
+  '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +117,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/api/analyze-brief'
+    | '/api/checkout'
+    | '/api/checkout-confirm'
+    | '/api/download-logo'
     | '/api/generate-logo'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +129,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/api/analyze-brief'
+    | '/api/checkout'
+    | '/api/checkout-confirm'
+    | '/api/download-logo'
     | '/api/generate-logo'
   id:
     | '__root__'
@@ -108,6 +141,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/api/analyze-brief'
+    | '/api/checkout'
+    | '/api/checkout-confirm'
+    | '/api/download-logo'
     | '/api/generate-logo'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +154,9 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
   ApiAnalyzeBriefRoute: typeof ApiAnalyzeBriefRoute
+  ApiCheckoutRoute: typeof ApiCheckoutRoute
+  ApiCheckoutConfirmRoute: typeof ApiCheckoutConfirmRoute
+  ApiDownloadLogoRoute: typeof ApiDownloadLogoRoute
   ApiGenerateLogoRoute: typeof ApiGenerateLogoRoute
 }
 
@@ -165,6 +204,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateLogoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/download-logo': {
+      id: '/api/download-logo'
+      path: '/api/download-logo'
+      fullPath: '/api/download-logo'
+      preLoaderRoute: typeof ApiDownloadLogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/checkout-confirm': {
+      id: '/api/checkout-confirm'
+      path: '/api/checkout-confirm'
+      fullPath: '/api/checkout-confirm'
+      preLoaderRoute: typeof ApiCheckoutConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/checkout': {
+      id: '/api/checkout'
+      path: '/api/checkout'
+      fullPath: '/api/checkout'
+      preLoaderRoute: typeof ApiCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/analyze-brief': {
       id: '/api/analyze-brief'
       path: '/api/analyze-brief'
@@ -182,6 +242,9 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
   ApiAnalyzeBriefRoute: ApiAnalyzeBriefRoute,
+  ApiCheckoutRoute: ApiCheckoutRoute,
+  ApiCheckoutConfirmRoute: ApiCheckoutConfirmRoute,
+  ApiDownloadLogoRoute: ApiDownloadLogoRoute,
   ApiGenerateLogoRoute: ApiGenerateLogoRoute,
 }
 export const routeTree = rootRouteImport
