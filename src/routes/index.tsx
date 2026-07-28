@@ -4,6 +4,9 @@ import { BriefForm } from "@/components/studio/BriefForm";
 import { ProposalCard } from "@/components/studio/ProposalCard";
 import { RefinePanel } from "@/components/studio/RefinePanel";
 import { PaywallDialog } from "@/components/studio/PaywallDialog";
+import { BeforeAfter } from "@/components/studio/BeforeAfter";
+import { HowItWorks } from "@/components/studio/HowItWorks";
+import { GenerationProgress } from "@/components/studio/GenerationProgress";
 import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { streamLogo } from "@/lib/streamImage";
 import { downloadPng, downloadSvg } from "@/lib/exportLogo";
@@ -48,6 +51,7 @@ function Index() {
 
   const selected = proposals.find((p) => p.id === selectedId) ?? null;
   const generating = proposals.some((p) => p.status === "pending" || p.status === "streaming");
+  const doneCount = proposals.filter((p) => p.status === "done" || p.status === "error").length;
   const paid = selected ? paidIds.includes(selected.id) : false;
 
   function patch(id: string, update: (p: Proposal) => Proposal) {
@@ -212,8 +216,18 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
         </p>
       </section>
 
+      <BeforeAfter />
+      <HowItWorks />
+
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <BriefForm loading={analyzing || generating} onSubmit={handleBrief} />
+
+        <GenerationProgress
+          active={analyzing || generating}
+          analyzing={analyzing}
+          done={doneCount}
+          total={proposals.length || 6}
+        />
 
         {error && (
           <p className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive-foreground">
@@ -309,9 +323,22 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
       )}
 
       <footer className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-5 py-8 text-xs text-muted-foreground">
-          Rebrand IA · Conteúdo gerado por inteligência artificial. Você é responsável por
-          verificar a disponibilidade de registro da marca.
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Rebrand IA · Conteúdo gerado por inteligência artificial. Você é responsável por
+            verificar a disponibilidade de registro da marca.
+          </p>
+          <nav className="flex gap-4">
+            <Link to="/privacidade" className="underline underline-offset-4 hover:text-foreground">
+              Política de privacidade
+            </Link>
+            <Link to="/termos" className="underline underline-offset-4 hover:text-foreground">
+              Termos de uso
+            </Link>
+            <Link to="/contato" className="underline underline-offset-4 hover:text-foreground">
+              Contato
+            </Link>
+          </nav>
         </div>
       </footer>
     </main>
