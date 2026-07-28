@@ -369,7 +369,7 @@ Apply the new adjustment on top of every previous decision — never undo an ear
                   key={p.id}
                   proposal={p}
                   selected={p.id === selectedId}
-                  onSelect={() => setSelectedId(p.id)}
+                  onSelect={() => selectProposal(p)}
                   onToggleFavorite={() => patch(p.id, (x) => ({ ...x, favorite: !x.favorite }))}
                 />
               ))}
