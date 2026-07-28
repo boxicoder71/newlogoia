@@ -13,7 +13,7 @@ export type Analysis = {
   directions: { name: string; rationale: string; prompt: string }[];
 };
 
-export type Version = { src: string; label: string; final: boolean };
+export type Version = { src: string; label: string; final: boolean; assetId?: string };
 
 export type Proposal = {
   id: string;
