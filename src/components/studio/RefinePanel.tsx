@@ -119,6 +119,7 @@ export function RefinePanel({
       >
         <input
           value={text}
+          id="refine-input"
           maxLength={240}
           onChange={(e) => setText(e.target.value)}
           placeholder="Peça um ajuste em português…"
