@@ -146,12 +146,15 @@ function Index() {
     const prompt = `Edite a logo enviada aplicando este ajuste: "${instruction}".
 Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e legível, fundo branco sólido, formas limpas de logo vetorial, legibilidade em tamanho pequeno e funcionamento em preto e branco. Não gere do zero: refine a imagem existente.`;
     try {
-      await streamLogo({ prompt, refImage: base.src, fast: true }, (src, final) => {
-        patch(id, (x) => {
-          const versions = [...x.versions];
-          versions[newIndex] = { src, label: instruction, final };
-          return { ...x, versions, currentIndex: newIndex };
-        });
+      const { assetId, preview } = await generateLogo({
+        prompt,
+        refAssetId: base.assetId ?? null,
+        fast: true,
+      });
+      patch(id, (x) => {
+        const versions = [...x.versions];
+        versions[newIndex] = { src: preview, label: instruction, final: true, assetId };
+        return { ...x, versions, currentIndex: newIndex };
       });
       patch(id, (x) => ({ ...x, status: "done" }));
     } catch (e) {
@@ -166,14 +169,13 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
     setRefining(false);
   }
 
-  async function exportNow(format: "png" | "svg") {
-    const v = selected?.versions[selected.currentIndex];
-    if (!v || !brief) return;
+  async function exportNow(format: "png" | "svg", cleanSrc: string) {
+    if (!brief) return;
     const base = brief.company.toLowerCase().replace(/\s+/g, "-") || "marca";
     setExporting(true);
     try {
-      if (format === "png") await downloadPng(v.src, base);
-      else await downloadSvg(v.src, base);
+      if (format === "png") await downloadPng(cleanSrc, base);
+      else await downloadSvg(cleanSrc, base);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Falha ao exportar arquivo");
     }
@@ -181,23 +183,32 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
   }
 
   function handleDownload(format: "png" | "svg") {
-    if (!selected) return;
-    if (paidIds.includes(selected.id)) {
-      void exportNow(format);
+    if (!selected || !currentAssetId) return;
+    const clean = cleanByAsset[currentAssetId];
+    if (clean) {
+      void exportNow(format, clean);
       return;
     }
     setPaywallFormat(format);
   }
 
   async function handlePay() {
-    if (!selected || !paywallFormat) return;
+    if (!selected || !paywallFormat || !currentAssetId) return;
+    const assetId = currentAssetId;
     setPaying(true);
-    // Pagamento real será conectado ao provedor de checkout.
-    setPaidIds((ids) => [...ids, selected.id]);
-    const format = paywallFormat;
-    setPaywallFormat(null);
-    setPaying(false);
-    await exportNow(format);
+    setError(null);
+    try {
+      // O servidor cria o pedido, confirma o pagamento e só então libera o arquivo limpo.
+      const clean = await purchaseAndFetchClean(assetId);
+      setCleanByAsset((map) => ({ ...map, [assetId]: clean }));
+      const format = paywallFormat;
+      setPaywallFormat(null);
+      setPaying(false);
+      await exportNow(format, clean);
+    } catch (e) {
+      setPaying(false);
+      setError(e instanceof Error ? e.message.slice(0, 200) : "Falha ao concluir o pagamento");
+    }
   }
 
   function handleResetToOriginal() {
