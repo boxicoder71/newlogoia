@@ -41,6 +41,8 @@ export const INDUSTRIES = [
   "Outro",
 ];
 
+export const AI_SUGGESTED_STYLE = "Deixar a IA sugerir";
+
 export const STYLES = [
   { value: "Minimalista", hint: "Formas simples, muito respiro" },
   { value: "Geométrico", hint: "Construção precisa, grid" },
