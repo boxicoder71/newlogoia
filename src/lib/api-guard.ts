@@ -20,7 +20,14 @@ function isAllowedHost(host: string | null, selfHost: string): boolean {
   if (host === selfHost) return true;
   if (ALLOWED_HOSTS.includes(host)) return true;
   // domínios de preview/deploy da própria plataforma
-  return /(^|\.)lovable\.app$/.test(host.split(":")[0]);
+  const hostname = host.split(":")[0];
+  return (
+    /(^|\.)lovable\.app$/.test(hostname) ||
+    /(^|\.)lovableproject\.com$/.test(hostname) ||
+    /(^|\.)lovable\.dev$/.test(hostname) ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1"
+  );
 }
 
 export function checkOrigin(request: Request): Response | null {
