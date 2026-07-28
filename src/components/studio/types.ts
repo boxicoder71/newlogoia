@@ -49,10 +49,10 @@ export const INDUSTRIES = [
 export const AI_SUGGESTED_STYLE = "Deixar a IA sugerir";
 
 export const STYLES = [
-  { value: "Minimalista", hint: "Formas simples, muito respiro" },
-  { value: "Geométrico", hint: "Construção precisa, grid" },
-  { value: "Mascote", hint: "Personagem memorável" },
-  { value: "Tipográfico", hint: "Só letras, wordmark" },
-  { value: "Emblema / badge", hint: "Selo, contorno fechado" },
-  { value: "Abstrato", hint: "Símbolo conceitual" },
+  { value: "Minimalista essencial", hint: "Só o indispensável, muito respiro" },
+  { value: "Geométrico minimalista", hint: "Círculo, quadrado e linhas em grid" },
+  { value: "Tipográfico limpo", hint: "Só o nome, sem símbolo" },
+  { value: "Monoline", hint: "Traço fino de espessura única" },
+  { value: "Negativo / recorte", hint: "Forma criada pelo espaço vazio" },
+  { value: "Monocromático", hint: "Uma cor só, contraste puro" },
 ];
