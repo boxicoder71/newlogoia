@@ -15,12 +15,14 @@ const label = "mb-1.5 block text-xs font-medium uppercase tracking-[0.14em] text
 export function BriefForm({ loading, onSubmit }: Props) {
   const [brief, setBrief] = useState<Brief>({
     company: "",
+    slogan: "",
     industry: INDUSTRIES[0],
     description: "",
     audience: "",
     keywords: "",
     style: STYLES[0].value,
     colors: "",
+    avoid: "",
   });
   const [image, setImage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -114,6 +116,23 @@ export function BriefForm({ loading, onSubmit }: Props) {
           </select>
         </div>
         <div className="sm:col-span-2">
+          <label className={label} htmlFor="slogan">
+            Slogan na logo (opcional)
+          </label>
+          <input
+            id="slogan"
+            className={field}
+            maxLength={60}
+            value={brief.slogan}
+            onChange={(e) => set("slogan", e.target.value)}
+            placeholder="Pão de fermentação natural"
+          />
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Deixe vazio para uma logo sem texto extra. Se preencher, escreva exatamente como deve
+            aparecer.
+          </p>
+        </div>
+        <div className="sm:col-span-2">
           <label className={label} htmlFor="description">
             O que a empresa faz
           </label>
@@ -150,6 +169,19 @@ export function BriefForm({ loading, onSubmit }: Props) {
             value={brief.keywords}
             onChange={(e) => set("keywords", e.target.value)}
             placeholder="moderno, confiável, premium"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className={label} htmlFor="avoid">
+            O que evitar (opcional)
+          </label>
+          <input
+            id="avoid"
+            className={field}
+            maxLength={140}
+            value={brief.avoid}
+            onChange={(e) => set("avoid", e.target.value)}
+            placeholder="nada de trigo desenhado, sem tons de vermelho, sem mascote"
           />
         </div>
         <div className="sm:col-span-2">

@@ -7,6 +7,14 @@ export async function generateLogo(body: {
   refImage?: string | null;
   refAssetId?: string | null;
   fast?: boolean;
+  expect?: { company?: string; slogan?: string | null; briefSummary?: string | null };
+  meta?: {
+    industry?: string;
+    style?: string;
+    archetype?: string;
+    kind?: "generation" | "refinement";
+    detail?: string;
+  };
 }): Promise<GeneratedLogo> {
   const res = await fetch("/api/generate-logo", {
     method: "POST",
