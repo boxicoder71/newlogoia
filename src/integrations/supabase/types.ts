@@ -53,6 +53,42 @@ export type Database = {
         }
         Relationships: []
       }
+      logo_events: {
+        Row: {
+          archetype: string | null
+          attempts: number | null
+          created_at: string
+          detail: string | null
+          event: string
+          id: number
+          industry: string | null
+          reason: string | null
+          style: string | null
+        }
+        Insert: {
+          archetype?: string | null
+          attempts?: number | null
+          created_at?: string
+          detail?: string | null
+          event: string
+          id?: number
+          industry?: string | null
+          reason?: string | null
+          style?: string | null
+        }
+        Update: {
+          archetype?: string | null
+          attempts?: number | null
+          created_at?: string
+          detail?: string | null
+          event?: string
+          id?: number
+          industry?: string | null
+          reason?: string | null
+          style?: string | null
+        }
+        Relationships: []
+      }
       logo_orders: {
         Row: {
           amount_cents: number
@@ -107,6 +143,14 @@ export type Database = {
           allowed: boolean
           retry_after_seconds: number
           used: number
+        }[]
+      }
+      logo_event_trends: {
+        Args: { _industry?: string; _limit?: number }
+        Returns: {
+          detail: string
+          event: string
+          uses: number
         }[]
       }
       purge_old_logo_assets: { Args: never; Returns: undefined }
