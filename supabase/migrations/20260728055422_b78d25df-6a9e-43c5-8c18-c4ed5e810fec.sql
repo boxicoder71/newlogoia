@@ -1,0 +1,1 @@
+ALTER TABLE public.logo_orders ALTER COLUMN amount_cents SET DEFAULT 4900;
