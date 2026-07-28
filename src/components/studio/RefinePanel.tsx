@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Proposal } from "./types";
 import { Spinner } from "./Spinner";
+import { Watermark } from "./Watermark";
 
 type Props = {
   proposal: Proposal;
@@ -50,21 +51,32 @@ export function RefinePanel({
         <h2 className="font-display text-lg font-semibold">{proposal.name}</h2>
       </div>
 
-      <div className="checkerboard flex aspect-square items-center justify-center rounded-md border border-border bg-background/60">
+      <div className="checkerboard relative flex aspect-square items-center justify-center overflow-hidden rounded-md border border-border bg-background/60">
         {version ? (
-          <img
-            src={version.src}
-            alt={`Versão atual da logo ${proposal.name}`}
-            className={`h-full w-full object-contain transition-[filter] duration-500 ${
-              version.final ? "blur-0" : "blur-xl"
-            }`}
-          />
+          <>
+            <img
+              src={version.src}
+              alt={`Versão atual da logo ${proposal.name}`}
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+              className={`pointer-events-none h-full w-full select-none object-contain transition-[filter] duration-500 ${
+                version.final ? "blur-0" : "blur-xl"
+              }`}
+            />
+            {version.final && !paid && <Watermark />}
+          </>
         ) : (
           <span className="flex items-center gap-2 text-xs text-muted-foreground">
             <Spinner /> Gerando…
           </span>
         )}
       </div>
+
+      {!paid && (
+        <p className="text-center text-[11px] text-muted-foreground">
+          A marca d'água some no arquivo final, após o pagamento.
+        </p>
+      )}
 
       <p className="rounded-md border border-border bg-background/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
         Ajustes são opcionais. Se já gostou desta proposta, siga direto para o download. Se pedir
