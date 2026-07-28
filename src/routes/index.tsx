@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BriefForm } from "@/components/studio/BriefForm";
 import { ProposalCard } from "@/components/studio/ProposalCard";
 import { RefinePanel } from "@/components/studio/RefinePanel";
 import { PaywallDialog } from "@/components/studio/PaywallDialog";
 import { BeforeAfter } from "@/components/studio/BeforeAfter";
 import { HowItWorks } from "@/components/studio/HowItWorks";
+import { BeforeForm } from "@/components/studio/BeforeForm";
 import { GenerationProgress } from "@/components/studio/GenerationProgress";
 import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { streamLogo } from "@/lib/streamImage";
@@ -48,6 +49,7 @@ function Index() {
   const [paywallFormat, setPaywallFormat] = useState<"png" | "svg" | null>(null);
   const [paying, setPaying] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   const selected = proposals.find((p) => p.id === selectedId) ?? null;
   const generating = proposals.some((p) => p.status === "pending" || p.status === "streaming");
@@ -81,6 +83,9 @@ function Index() {
 
   async function handleBrief(b: Brief, image: string | null) {
     setAnalyzing(true);
+    setTimeout(() => {
+      progressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
     setError(null);
     setAnalysis(null);
     setProposals([]);
@@ -218,16 +223,19 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
 
       <BeforeAfter />
       <HowItWorks />
+      <BeforeForm />
 
       <section className="mx-auto max-w-6xl px-5 pb-16">
         <BriefForm loading={analyzing || generating} onSubmit={handleBrief} />
 
-        <GenerationProgress
-          active={analyzing || generating}
-          analyzing={analyzing}
-          done={doneCount}
-          total={proposals.length || 6}
-        />
+        <div ref={progressRef}>
+          <GenerationProgress
+            active={analyzing || generating}
+            analyzing={analyzing}
+            done={doneCount}
+            total={proposals.length || 6}
+          />
+        </div>
 
         {error && (
           <p className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive-foreground">
