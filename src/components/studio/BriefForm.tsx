@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { INDUSTRIES, STYLES, type Brief } from "./types";
+import { AI_SUGGESTED_STYLE, INDUSTRIES, STYLES, type Brief } from "./types";
 import { Spinner } from "./Spinner";
 import { PalettePicker } from "./PalettePicker";
 
@@ -155,6 +155,20 @@ export function BriefForm({ loading, onSubmit }: Props) {
         <div className="sm:col-span-2">
           <span className={label}>Estilo preferido</span>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => set("style", AI_SUGGESTED_STYLE)}
+              className={`col-span-2 rounded-md border px-3 py-2 text-left text-sm transition sm:col-span-3 ${
+                brief.style === AI_SUGGESTED_STYLE
+                  ? "border-primary bg-primary/10 text-foreground studio-glow"
+                  : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              <span className="block font-medium">{AI_SUGGESTED_STYLE}</span>
+              <span className="block text-[11px] opacity-70">
+                A IA escolhe o estilo mais adequado ao seu setor e público
+              </span>
+            </button>
             {STYLES.map((s) => {
               const active = brief.style === s.value;
               return (
