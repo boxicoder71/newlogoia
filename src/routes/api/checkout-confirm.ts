@@ -21,6 +21,8 @@ export const Route = createFileRoute("/api/checkout-confirm")({
         if (!isUuid(orderId)) return new Response("Pedido inválido", { status: 400 });
         const ok = await markOrderPaid(orderId);
         if (!ok) return new Response("Pedido não encontrado ou já processado", { status: 409 });
+        const { trackEvent } = await import("@/lib/logo-metrics.server");
+        void trackEvent({ event: "purchase" });
         return Response.json({ status: "paid" });
       },
     },
