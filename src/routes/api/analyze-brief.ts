@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { checkOrigin, readLimitedJson } from "@/lib/api-guard";
 
 export type Brief = {
   company: string;
@@ -31,7 +32,12 @@ export const Route = createFileRoute("/api/analyze-brief")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { brief, image } = (await request.json()) as { brief: Brief; image?: string | null };
+        const originError = checkOrigin(request);
+        if (originError) return originError;
+
+        const parsed = await readLimitedJson<{ brief: Brief; image?: string | null }>(request);
+        if ("response" in parsed) return parsed.response;
+        const { brief, image } = parsed.data;
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
         if (!brief?.company) return new Response("Briefing incompleto", { status: 400 });

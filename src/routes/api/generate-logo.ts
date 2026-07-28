@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { checkOrigin, readLimitedJson } from "@/lib/api-guard";
 
 type Body = {
   prompt: string;
@@ -10,7 +11,12 @@ export const Route = createFileRoute("/api/generate-logo")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { prompt, refImage, fast } = (await request.json()) as Body;
+        const originError = checkOrigin(request);
+        if (originError) return originError;
+
+        const parsed = await readLimitedJson<Body>(request);
+        if ("response" in parsed) return parsed.response;
+        const { prompt, refImage, fast } = parsed.data;
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
         if (!prompt || prompt.length > 4000) {
