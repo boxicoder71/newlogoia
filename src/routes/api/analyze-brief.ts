@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { checkOrigin, checkRateLimit, readLimitedJson } from "@/lib/api-guard";
-import { ARCHETYPES, baseImageRules, sectorGuidance } from "@/lib/logo-knowledge";
+import {
+  ARCHETYPES,
+  MINIMALISM_RULES,
+  STYLE_DIRECTIVES,
+  baseImageRules,
+  sectorGuidance,
+} from "@/lib/logo-knowledge";
 
 export type Brief = {
   company: string;
@@ -12,6 +18,8 @@ export type Brief = {
   style: string;
   colors: string;
   avoid?: string;
+  usage?: string;
+  references?: string;
 };
 
 export type Analysis = {
@@ -19,7 +27,7 @@ export type Analysis = {
   directions: { name: string; rationale: string; prompt: string; archetype?: string }[];
 };
 
-const SYSTEM = `Você é diretor de arte sênior especializado em identidade visual e redesign de logos.
+const SYSTEM = `Você é diretor de arte sênior especializado em identidade visual MINIMALISTA. Todas as propostas devem ser minimalistas: pouquíssimos elementos, sem ornamento, sem ilustração, no máximo duas cores chapadas.
 Responda SEMPRE em português do Brasil, exceto os prompts de geração de imagem, que devem ser escritos em inglês.
 Você receberá 6 arquétipos numerados. Gere exatamente 6 direções, na MESMA ORDEM, e cada direção deve obedecer estritamente ao arquétipo correspondente (composição, clima e paleta). Não repita a mesma ideia em dois arquétipos: elas precisam ser visivelmente diferentes entre si.
 Cada "prompt" deve ser um parágrafo em inglês descrevendo a logo concretamente: composição, símbolo (ou ausência dele), estilo tipográfico, paleta com cores nomeadas, e o texto exato a ser desenhado.
@@ -62,6 +70,8 @@ Palavras da marca: ${brief.keywords}
 Estilo preferido: ${brief.style}
 Cores: ${brief.colors || "a IA decide"}
 Evitar: ${brief.avoid || "nada específico"}
+Onde será usada: ${brief.usage || "não informado"}
+Marcas admiradas (referência de clima, nunca copiar): ${brief.references || "não informado"}
 
 Diretrizes obrigatórias do setor (aplicar em todas as direções):
 ${sector}
@@ -107,6 +117,8 @@ ${image ? "Uma logo atual foi enviada — analise-a criticamente." : "A empresa 
         // O servidor garante o arquétipo e as regras técnicas em cada prompt,
         // mesmo que o modelo tenha sido criativo demais na resposta.
         const rules = baseImageRules(brief.company, slogan);
+        const styleDirective = STYLE_DIRECTIVES[brief.style];
+        const styleLine = styleDirective ? `Style focus: ${styleDirective}.` : "";
         analysis.directions = ARCHETYPES.map((a, i) => {
           const d = analysis.directions?.[i];
           return {
@@ -117,6 +129,8 @@ ${image ? "Uma logo atual foi enviada — analise-a criticamente." : "A empresa 
 Structure (mandatory): ${a.directive}.
 Sector guidance: ${sector}
 ${brief.avoid ? `Avoid: ${brief.avoid}.` : ""}
+${styleLine}
+${MINIMALISM_RULES}
 ${rules}`.trim(),
           };
         });
