@@ -68,6 +68,18 @@ function clientIp(request: Request): string {
 export async function checkRateLimit(request: Request, route: string): Promise<Response | null> {
   const ip = clientIp(request);
   const limit = RATE_LIMITS[route] ?? DEFAULT_RATE_LIMIT;
+
+  // Sem as variáveis do banco a contagem não existe: falhar aberto aqui
+  // desligaria silenciosamente a proteção em produção.
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error(
+      `[rate-limit] configuração ausente (SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY) — bloqueando ${route}`,
+    );
+    return new Response("Serviço indisponível no momento. Tente novamente em instantes.", {
+      status: 503,
+    });
+  }
+
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin.rpc("check_api_rate_limit", {

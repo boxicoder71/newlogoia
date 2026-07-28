@@ -20,6 +20,7 @@ import { Route as ApiDownloadLogoRouteImport } from './routes/api/download-logo'
 import { Route as ApiCheckoutConfirmRouteImport } from './routes/api/checkout-confirm'
 import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
 import { Route as ApiAnalyzeBriefRouteImport } from './routes/api/analyze-brief'
+import { Route as ApiPublicEnvStatusRouteImport } from './routes/api/public/env-status'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -76,6 +77,11 @@ const ApiAnalyzeBriefRoute = ApiAnalyzeBriefRouteImport.update({
   path: '/api/analyze-brief',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEnvStatusRoute = ApiPublicEnvStatusRouteImport.update({
+  id: '/api/public/env-status',
+  path: '/api/public/env-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
   '/api/track': typeof ApiTrackRoute
+  '/api/public/env-status': typeof ApiPublicEnvStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
   '/api/track': typeof ApiTrackRoute
+  '/api/public/env-status': typeof ApiPublicEnvStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
   '/api/track': typeof ApiTrackRoute
+  '/api/public/env-status': typeof ApiPublicEnvStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/api/download-logo'
     | '/api/generate-logo'
     | '/api/track'
+    | '/api/public/env-status'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/api/download-logo'
     | '/api/generate-logo'
     | '/api/track'
+    | '/api/public/env-status'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/api/download-logo'
     | '/api/generate-logo'
     | '/api/track'
+    | '/api/public/env-status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   ApiDownloadLogoRoute: typeof ApiDownloadLogoRoute
   ApiGenerateLogoRoute: typeof ApiGenerateLogoRoute
   ApiTrackRoute: typeof ApiTrackRoute
+  ApiPublicEnvStatusRoute: typeof ApiPublicEnvStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyzeBriefRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/env-status': {
+      id: '/api/public/env-status'
+      path: '/api/public/env-status'
+      fullPath: '/api/public/env-status'
+      preLoaderRoute: typeof ApiPublicEnvStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDownloadLogoRoute: ApiDownloadLogoRoute,
   ApiGenerateLogoRoute: ApiGenerateLogoRoute,
   ApiTrackRoute: ApiTrackRoute,
+  ApiPublicEnvStatusRoute: ApiPublicEnvStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -12,7 +12,7 @@ import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { generateLogo, purchaseAndFetchClean } from "@/lib/generateLogo";
 import { downloadPng, downloadSvg } from "@/lib/exportLogo";
 
-const PRICE = "R$ 79,00";
+const PRICE = "R$ 49,00";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -78,7 +78,7 @@ function Index() {
   }
 
   function briefSummary(b: Brief) {
-    return `${b.company}${b.slogan ? ` — slogan "${b.slogan}"` : ""} · ${b.industry} · ${b.description} · público: ${b.audience} · palavras: ${b.keywords} · estilo: ${b.style} · cores: ${b.colors || "livre"}${b.avoid ? ` · evitar: ${b.avoid}` : ""}`;
+    return `${b.company}${b.slogan ? ` — slogan "${b.slogan}"` : ""} · ${b.industry} · ${b.description} · público: ${b.audience} · palavras: ${b.keywords} · estilo: ${b.style} · cores: ${b.colors || "livre"}${b.avoid ? ` · evitar: ${b.avoid}` : ""}${b.usage ? ` · uso: ${b.usage}` : ""}${b.references ? ` · referências de clima: ${b.references}` : ""}`;
   }
 
   async function runProposal(p: Proposal, b: Brief, ref: string | null) {

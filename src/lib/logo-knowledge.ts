@@ -13,46 +13,56 @@ export const ARCHETYPES: Archetype[] = [
   {
     id: "symbol-wordmark",
     composition: "Símbolo + tipografia",
-    mood: "Alto contraste",
+    mood: "Minimalista essencial",
     directive:
-      "combination mark: a distinctive abstract symbol placed above or to the left of the company name; high-contrast palette (one dark neutral plus one saturated accent)",
+      "minimal combination mark: one extremely simple abstract symbol (buildable from 2-3 basic geometric shapes) placed to the left of the company name; two flat colours maximum, generous whitespace",
   },
   {
     id: "wordmark",
     composition: "Apenas tipografia",
-    mood: "Minimalista",
+    mood: "Tipográfico limpo",
     directive:
-      "pure wordmark, no icon at all: the company name only, custom-feeling letterforms, generous letter spacing; minimalist palette, at most two flat colours",
+      "pure minimal wordmark, no icon at all: the company name only in a clean geometric sans-serif, wide even letter spacing, one subtle custom detail in a single letter; one or two flat colours",
   },
   {
-    id: "emblem",
-    composition: "Emblema",
-    mood: "Premium",
+    id: "monoline",
+    composition: "Monoline",
+    mood: "Traço único",
     directive:
-      "emblem/badge lockup: the company name enclosed inside a contained shape (circle, shield or rounded frame); premium palette (deep neutral plus a metallic-feeling warm or cool accent), refined and balanced",
+      "monoline mark: a single continuous line of uniform stroke weight forming a simple symbol, with the company name in a light clean sans below; one colour plus a neutral, no fills",
   },
   {
     id: "monogram",
     composition: "Monograma",
-    mood: "Paleta fria",
+    mood: "Geométrico",
     directive:
-      "monogram: the initials of the company interlocked into a single geometric mark, with the full company name set small underneath; cool palette (blues, teals, cool greys)",
+      "minimal monogram: the initials reduced to a strict geometric construction on an invisible grid (circles, squares, 45-degree angles only), full company name set small underneath; two flat colours",
   },
   {
-    id: "lettermark",
-    composition: "Lettermark",
-    mood: "Paleta quente",
+    id: "negative-space",
+    composition: "Espaço negativo",
+    mood: "Recorte",
     directive:
-      "lettermark: a single dominant initial letter treated as the icon, with the full company name in a small clean type line beside or below it; warm palette (amber, terracotta, warm reds or golden tones)",
+      "negative-space mark: a simple solid shape where the brand idea is revealed by the empty space cut out of it, paired with a quiet sans wordmark; strictly two flat colours, no outlines",
   },
   {
-    id: "abstract-icon",
-    composition: "Ícone abstrato",
-    mood: "Paleta neutra",
+    id: "monochrome-abstract",
+    composition: "Ícone abstrato mono",
+    mood: "Monocromático",
     directive:
-      "abstract icon mark: a conceptual geometric symbol that suggests the brand idea without literal illustration, with the company name in a neutral sans type line; restrained neutral palette (greys, off-white, one muted tone)",
+      "monochrome abstract mark: one reduced conceptual geometric symbol in a single ink colour on white, with the company name in the same colour; no accent colour at all, maximum restraint",
   },
 ];
+
+/** Traduz o estilo escolhido no formulário para instrução de imagem. */
+export const STYLE_DIRECTIVES: Record<string, string> = {
+  "Minimalista essencial": "strip everything non-essential; only the elements that carry meaning remain",
+  "Geométrico minimalista": "build the mark on a strict grid from circles, squares and 45-degree angles",
+  "Tipográfico limpo": "let typography carry the whole identity; symbol only if truly necessary",
+  Monoline: "single uniform stroke weight, no fills, open and airy shapes",
+  "Negativo / recorte": "use negative space as the main device; the empty area forms part of the meaning",
+  Monocromático: "one single ink colour on white; contrast comes from shape, not from colour",
+};
 
 type Sector = { match: RegExp; guidance: string };
 
@@ -112,6 +122,10 @@ const SECTORS: Sector[] = [
 const GENERIC =
   "Prioritise timeless simplicity: strong silhouette, no gradients, no 3D, no photorealism, no drop shadows, legible at 32px.";
 
+/** Regras de minimalismo aplicadas a TODAS as gerações — é o foco do produto. */
+export const MINIMALISM_RULES =
+  "Design language: strict modern minimalism. Maximum simplicity — the fewest possible shapes, no ornament, no mascot, no illustration, no literal scene, no inner details, no outline strokes around the whole mark. At most two flat colours plus white. Wide clear space around the lockup. The mark must be reproducible as a single flat silhouette and still readable at 16px.";
+
 export function sectorGuidance(industry: string): string {
   return SECTORS.find((s) => s.match.test(industry ?? ""))?.guidance ?? GENERIC;
 }
@@ -124,6 +138,7 @@ export function baseImageRules(company: string, slogan?: string | null): string 
       ? `A secondary line with the exact tagline "${slogan}" in a smaller size, also spelled exactly.`
       : "Do not add any tagline, slogan or extra words.",
     "Flat vector logo, clean shapes, solid plain white background, centered composition with generous margin.",
+    MINIMALISM_RULES,
     "No mockup, no photo, no realistic shadow, no gradient mesh, no 3D, no texture, no frame border.",
     "Must remain legible at favicon size and work in pure black and white.",
     "Never reproduce existing trademarks or copyrighted characters; the mark must be original.",
