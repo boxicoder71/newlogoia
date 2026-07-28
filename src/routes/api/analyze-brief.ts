@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { checkOrigin, readLimitedJson } from "@/lib/api-guard";
+import { checkOrigin, checkRateLimit, readLimitedJson } from "@/lib/api-guard";
 
 export type Brief = {
   company: string;
@@ -34,6 +34,9 @@ export const Route = createFileRoute("/api/analyze-brief")({
       POST: async ({ request }) => {
         const originError = checkOrigin(request);
         if (originError) return originError;
+
+        const limited = await checkRateLimit(request, "analyze-brief");
+        if (limited) return limited;
 
         const parsed = await readLimitedJson<{ brief: Brief; image?: string | null }>(request);
         if ("response" in parsed) return parsed.response;
