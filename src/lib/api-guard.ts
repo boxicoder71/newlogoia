@@ -36,6 +36,55 @@ export function checkOrigin(request: Request): Response | null {
 
 export const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024; // ~6MB de imagem em base64 + briefing
 
+const RATE_LIMIT = 5;
+const RATE_WINDOW_SECONDS = 600; // 10 minutos
+
+function clientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  return (
+    request.headers.get("cf-connecting-ip") ??
+    (forwarded ? forwarded.split(",")[0].trim() : null) ??
+    request.headers.get("x-real-ip") ??
+    "desconhecido"
+  );
+}
+
+// Limite de 5 requisições por IP a cada 10 minutos, contabilizado no banco
+// (consistente entre as instâncias serverless).
+export async function checkRateLimit(request: Request, route: string): Promise<Response | null> {
+  const ip = clientIp(request);
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("check_api_rate_limit", {
+      _ip: ip,
+      _route: route,
+      _limit: RATE_LIMIT,
+      _window_seconds: RATE_WINDOW_SECONDS,
+    });
+    if (error) {
+      console.error(`[rate-limit] falha ao verificar limite em ${route}:`, error.message);
+      return null; // não bloqueia usuários legítimos se o contador falhar
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row && row.allowed === false) {
+      console.error(
+        `[rate-limit] bloqueado ip=${ip} rota=${route} usadas=${row.used} retry_after=${row.retry_after_seconds}s`,
+      );
+      return new Response(
+        `Limite de ${RATE_LIMIT} requisições a cada 10 minutos atingido. Tente novamente em ${Math.ceil((row.retry_after_seconds ?? 60) / 60)} minuto(s).`,
+        {
+          status: 429,
+          headers: { "Retry-After": String(row.retry_after_seconds ?? 60) },
+        },
+      );
+    }
+    return null;
+  } catch (err) {
+    console.error(`[rate-limit] erro inesperado em ${route}:`, err);
+    return null;
+  }
+}
+
 // Lê o corpo com limite rígido de bytes; devolve 413 se estourar.
 export async function readLimitedJson<T>(
   request: Request,

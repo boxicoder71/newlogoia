@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { checkOrigin, readLimitedJson } from "@/lib/api-guard";
+import { checkOrigin, checkRateLimit, readLimitedJson } from "@/lib/api-guard";
 
 type Body = {
   prompt: string;
@@ -13,6 +13,9 @@ export const Route = createFileRoute("/api/generate-logo")({
       POST: async ({ request }) => {
         const originError = checkOrigin(request);
         if (originError) return originError;
+
+        const limited = await checkRateLimit(request, "generate-logo");
+        if (limited) return limited;
 
         const parsed = await readLimitedJson<Body>(request);
         if ("response" in parsed) return parsed.response;
