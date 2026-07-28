@@ -35,6 +35,62 @@ export type Database = {
         }
         Relationships: []
       }
+      logo_assets: {
+        Row: {
+          clean_png: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          clean_png: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          clean_png?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      logo_orders: {
+        Row: {
+          amount_cents: number
+          asset_id: string
+          created_at: string
+          id: string
+          paid_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          asset_id: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          asset_id?: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logo_orders_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "logo_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -53,6 +109,7 @@ export type Database = {
           used: number
         }[]
       }
+      purge_old_logo_assets: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
