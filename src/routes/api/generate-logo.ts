@@ -8,7 +8,13 @@ type Body = {
   /** Refinamento a partir de uma proposta já gerada: só o id, a imagem limpa fica no servidor. */
   refAssetId?: string | null;
   fast?: boolean;
+  /** Dados que a autoverificação usa para reprovar logos com texto errado. */
+  expect?: { company?: string; slogan?: string | null; briefSummary?: string | null };
+  /** Contexto anônimo para métricas. */
+  meta?: { industry?: string; style?: string; archetype?: string; kind?: "generation" | "refinement"; detail?: string };
 };
+
+const MAX_ATTEMPTS = 3;
 
 function extractBase64(json: unknown): string | null {
   const j = json as {
@@ -47,36 +53,97 @@ export const Route = createFileRoute("/api/generate-logo")({
 
         const { getCleanImage, saveCleanImage, isUuid } = await import("@/lib/logo-assets.server");
 
-        const content: unknown[] = [{ type: "text", text: prompt }];
+        const refBlocks: unknown[] = [];
         if (isUuid(refAssetId)) {
           const clean = await getCleanImage(refAssetId);
           if (!clean) return new Response("Proposta não encontrada", { status: 404 });
-          content.push({
+          refBlocks.push({
             type: "image_url",
             image_url: { url: `data:image/png;base64,${clean}` },
           });
         } else if (refImage && refImage.startsWith("data:image/")) {
-          content.push({ type: "image_url", image_url: { url: refImage } });
+          refBlocks.push({ type: "image_url", image_url: { url: refImage } });
         }
 
-        const upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: fast ? "google/gemini-3.1-flash-image" : "google/gemini-3-pro-image",
-            messages: [{ role: "user", content }],
-            modalities: ["image", "text"],
-          }),
-        });
-
-        if (!upstream.ok) {
-          const text = await upstream.text().catch(() => "");
-          return new Response(text || "Falha na geração", { status: upstream.status });
+        const model = fast ? "google/gemini-3.1-flash-image" : "google/gemini-3-pro-image";
+        async function render(text: string, extra: unknown[]): Promise<string | Response> {
+          const upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: [{ type: "text", text }, ...extra] }],
+              modalities: ["image", "text"],
+            }),
+          });
+          if (!upstream.ok) {
+            const body = await upstream.text().catch(() => "");
+            return new Response(body || "Falha na geração", { status: upstream.status });
+          }
+          const image = extractBase64(await upstream.json());
+          return image ?? new Response("A geração terminou sem imagem", { status: 502 });
         }
 
-        const json = await upstream.json();
-        const cleanBase64 = extractBase64(json);
+        const { critiqueLogo, retryPrompt } = await import("@/lib/logo-critique.server");
+        const { trackEvent } = await import("@/lib/logo-metrics.server");
+        const company = parsed.data.expect?.company?.trim() ?? "";
+
+        let cleanBase64 = "";
+        let attempts = 0;
+        let lastReason = "";
+        let currentPrompt = prompt;
+        let currentRefs = refBlocks;
+
+        // Loop de autoverificação: o usuário só recebe uma versão aprovada
+        // (ou a melhor tentativa, se o limite for atingido).
+        while (attempts < MAX_ATTEMPTS) {
+          attempts += 1;
+          const result = await render(currentPrompt, currentRefs);
+          if (typeof result !== "string") {
+            if (attempts > 1 && cleanBase64) break; // mantém a última tentativa válida
+            return result;
+          }
+          cleanBase64 = result;
+
+          if (!company) break; // sem nome esperado não há o que auditar
+
+          const critique = await critiqueLogo(cleanBase64, {
+            company,
+            slogan: parsed.data.expect?.slogan ?? null,
+            briefSummary: parsed.data.expect?.briefSummary ?? null,
+          }, key);
+          if (critique.approved) break;
+
+          lastReason = critique.issues.join("; ").slice(0, 160);
+          void trackEvent({
+            event: "critique_rejected",
+            industry: parsed.data.meta?.industry,
+            style: parsed.data.meta?.style,
+            archetype: parsed.data.meta?.archetype,
+            attempts,
+            reason: lastReason || "texto incorreto",
+          });
+          if (attempts >= MAX_ATTEMPTS) break;
+
+          // Nova tentativa corrigindo a versão reprovada, usando o feedback da revisão.
+          currentPrompt = retryPrompt(prompt, critique, company);
+          currentRefs = [
+            ...refBlocks,
+            { type: "image_url", image_url: { url: `data:image/png;base64,${cleanBase64}` } },
+          ];
+        }
+
         if (!cleanBase64) return new Response("A geração terminou sem imagem", { status: 502 });
+
+        void trackEvent({
+          event: parsed.data.meta?.kind === "refinement" ? "refinement" : "generation",
+          industry: parsed.data.meta?.industry,
+          style: parsed.data.meta?.style,
+          archetype: parsed.data.meta?.archetype,
+          detail: parsed.data.meta?.detail,
+          attempts,
+          reason: lastReason || null,
+        });
 
         const assetId = await saveCleanImage(cleanBase64);
 
