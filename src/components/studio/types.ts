@@ -10,6 +10,10 @@ export type Brief = {
   colors: string;
   /** O que a marca NÃO quer ver na logo. */
   avoid: string;
+  /** Onde a logo será mais usada (fachada, app, embalagem...). */
+  usage: string;
+  /** Marcas de referência que o cliente admira. */
+  references: string;
 };
 
 export type Analysis = {

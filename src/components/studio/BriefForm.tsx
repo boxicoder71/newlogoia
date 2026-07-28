@@ -23,6 +23,8 @@ export function BriefForm({ loading, onSubmit }: Props) {
     style: STYLES[0].value,
     colors: "",
     avoid: "",
+    usage: "",
+    references: "",
   });
   const [image, setImage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,6 +42,18 @@ export function BriefForm({ loading, onSubmit }: Props) {
   }
 
   const valid = brief.company.trim().length > 1 && brief.description.trim().length > 3;
+
+  // Quanto mais contexto, mais assertiva é a geração — mostramos isso ao usuário.
+  const filled = [
+    brief.description.trim().length > 20,
+    brief.audience.trim().length > 2,
+    brief.keywords.trim().length > 2,
+    brief.usage.trim().length > 2,
+    brief.references.trim().length > 2,
+    brief.avoid.trim().length > 2,
+    Boolean(image),
+  ].filter(Boolean).length;
+  const strength = Math.round((filled / 7) * 100);
 
   return (
     <form
@@ -171,6 +185,35 @@ export function BriefForm({ loading, onSubmit }: Props) {
             placeholder="moderno, confiável, premium"
           />
         </div>
+        <div>
+          <label className={label} htmlFor="usage">
+            Onde a logo será mais usada (opcional)
+          </label>
+          <input
+            id="usage"
+            className={field}
+            maxLength={120}
+            value={brief.usage}
+            onChange={(e) => set("usage", e.target.value)}
+            placeholder="Fachada, embalagem e Instagram"
+          />
+        </div>
+        <div>
+          <label className={label} htmlFor="references">
+            Marcas que você admira (opcional)
+          </label>
+          <input
+            id="references"
+            className={field}
+            maxLength={120}
+            value={brief.references}
+            onChange={(e) => set("references", e.target.value)}
+            placeholder="Nubank, Muji, Apple"
+          />
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Servem de referência de clima — nunca copiamos marcas existentes.
+          </p>
+        </div>
         <div className="sm:col-span-2">
           <label className={label} htmlFor="avoid">
             O que evitar (opcional)
@@ -185,7 +228,10 @@ export function BriefForm({ loading, onSubmit }: Props) {
           />
         </div>
         <div className="sm:col-span-2">
-          <span className={label}>Estilo preferido</span>
+          <span className={label}>Estilo minimalista preferido</span>
+          <p className="mb-2 text-[11px] text-muted-foreground">
+            Todas as propostas são minimalistas — escolha a vertente que mais combina com a marca.
+          </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             <button
               type="button"
@@ -226,6 +272,23 @@ export function BriefForm({ loading, onSubmit }: Props) {
           <PalettePicker value={brief.colors} onChange={(v) => set("colors", v)} />
         </div>
         <div className="sm:col-span-2">
+          <div className="mb-3">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Qualidade do briefing</span>
+              <span>{strength}%</span>
+            </div>
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${Math.max(6, strength)}%` }}
+              />
+            </div>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {strength >= 80
+                ? "Briefing excelente — a IA tem tudo que precisa."
+                : "Quanto mais campos você preencher, mais precisas ficam as 6 propostas."}
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
