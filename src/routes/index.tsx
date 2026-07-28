@@ -191,7 +191,6 @@ Apply the new adjustment on top of every previous decision — never undo an ear
           detail: instruction,
         },
       });
-      });
       patch(id, (x) => {
         const versions = [...x.versions];
         versions[newIndex] = { src: preview, label: instruction, final: true, assetId };
