@@ -30,6 +30,13 @@ export function GenerationProgress({ active, done, total, analyzing }: Props) {
           style={{ width: `${pct}%` }}
         />
       </div>
+      <p className="mt-3 flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-foreground">
+        <span className="animate-bounce" aria-hidden="true">
+          ↓
+        </span>
+        Role a tela para baixo: as propostas aparecem logo abaixo desta barra, uma a uma. Nada
+        travou — a página continua carregando enquanto você desce.
+      </p>
     </div>
   );
 }
