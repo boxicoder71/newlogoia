@@ -43,8 +43,14 @@ export function checkOrigin(request: Request): Response | null {
 
 export const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024; // ~6MB de imagem em base64 + briefing
 
-const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 600; // 10 minutos
+// Limites por rota: um briefing dispara 1 análise e 6 gerações de imagem
+// (mais refinamentos), então cada rota tem seu próprio teto.
+const RATE_LIMITS: Record<string, number> = {
+  "analyze-brief": 5,
+  "generate-logo": 40,
+};
+const DEFAULT_RATE_LIMIT = 5;
 
 function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
@@ -60,12 +66,13 @@ function clientIp(request: Request): string {
 // (consistente entre as instâncias serverless).
 export async function checkRateLimit(request: Request, route: string): Promise<Response | null> {
   const ip = clientIp(request);
+  const limit = RATE_LIMITS[route] ?? DEFAULT_RATE_LIMIT;
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin.rpc("check_api_rate_limit", {
       _ip: ip,
       _route: route,
-      _limit: RATE_LIMIT,
+      _limit: limit,
       _window_seconds: RATE_WINDOW_SECONDS,
     });
     if (error) {
@@ -78,7 +85,7 @@ export async function checkRateLimit(request: Request, route: string): Promise<R
         `[rate-limit] bloqueado ip=${ip} rota=${route} usadas=${row.used} retry_after=${row.retry_after_seconds}s`,
       );
       return new Response(
-        `Limite de ${RATE_LIMIT} requisições a cada 10 minutos atingido. Tente novamente em ${Math.ceil((row.retry_after_seconds ?? 60) / 60)} minuto(s).`,
+        `Limite de uso atingido. Tente novamente em ${Math.ceil((row.retry_after_seconds ?? 60) / 60)} minuto(s).`,
         {
           status: 429,
           headers: { "Retry-After": String(row.retry_after_seconds ?? 60) },
