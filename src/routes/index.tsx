@@ -3,8 +3,12 @@ import { useState } from "react";
 import { BriefForm } from "@/components/studio/BriefForm";
 import { ProposalCard } from "@/components/studio/ProposalCard";
 import { RefinePanel } from "@/components/studio/RefinePanel";
+import { PaywallDialog } from "@/components/studio/PaywallDialog";
 import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { streamLogo } from "@/lib/streamImage";
+import { downloadPng, downloadSvg } from "@/lib/exportLogo";
+
+const PRICE = "R$ 79,00";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,8 +41,14 @@ function Index() {
   const [analyzing, setAnalyzing] = useState(false);
   const [refining, setRefining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paidIds, setPaidIds] = useState<string[]>([]);
+  const [paywallFormat, setPaywallFormat] = useState<"png" | "svg" | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const selected = proposals.find((p) => p.id === selectedId) ?? null;
+  const generating = proposals.some((p) => p.status === "pending" || p.status === "streaming");
+  const paid = selected ? paidIds.includes(selected.id) : false;
 
   function patch(id: string, update: (p: Proposal) => Proposal) {
     setProposals((list) => list.map((p) => (p.id === id ? update(p) : p)));
@@ -142,13 +152,43 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
     setRefining(false);
   }
 
-  function handleDownload() {
+  async function exportNow(format: "png" | "svg") {
     const v = selected?.versions[selected.currentIndex];
     if (!v || !brief) return;
-    const a = document.createElement("a");
-    a.href = v.src;
-    a.download = `${brief.company.toLowerCase().replace(/\s+/g, "-")}-logo.png`;
-    a.click();
+    const base = brief.company.toLowerCase().replace(/\s+/g, "-") || "marca";
+    setExporting(true);
+    try {
+      if (format === "png") await downloadPng(v.src, base);
+      else await downloadSvg(v.src, base);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao exportar arquivo");
+    }
+    setExporting(false);
+  }
+
+  function handleDownload(format: "png" | "svg") {
+    if (!selected) return;
+    if (paidIds.includes(selected.id)) {
+      void exportNow(format);
+      return;
+    }
+    setPaywallFormat(format);
+  }
+
+  async function handlePay() {
+    if (!selected || !paywallFormat) return;
+    setPaying(true);
+    // Pagamento real será conectado ao provedor de checkout.
+    setPaidIds((ids) => [...ids, selected.id]);
+    const format = paywallFormat;
+    setPaywallFormat(null);
+    setPaying(false);
+    await exportNow(format);
+  }
+
+  function handleResetToOriginal() {
+    if (!selected) return;
+    patch(selected.id, (x) => ({ ...x, versions: x.versions.slice(0, 1), currentIndex: 0 }));
   }
 
   return (
@@ -173,7 +213,7 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
       </section>
 
       <section className="mx-auto max-w-6xl px-5 pb-16">
-        <BriefForm loading={analyzing} onSubmit={handleBrief} />
+        <BriefForm loading={analyzing || generating} onSubmit={handleBrief} />
 
         {error && (
           <p className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive-foreground">
@@ -208,6 +248,27 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
         )}
 
         {proposals.length > 0 && (
+          <>
+          <div className="mt-10 studio-panel p-5">
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              Como escolher
+            </p>
+            <ol className="mt-2 grid gap-2 text-sm leading-relaxed text-muted-foreground sm:grid-cols-3">
+              <li>
+                <span className="font-medium text-foreground">1. Clique em uma proposta</span> para
+                abri-la no painel de refinamento ao lado.
+              </li>
+              <li>
+                <span className="font-medium text-foreground">2. Ajuste se quiser</span> — peça
+                mudanças por escrito. Isso é opcional: se já gostou, pule esta etapa.
+              </li>
+              <li>
+                <span className="font-medium text-foreground">3. Baixe em PNG e SVG</span> sem
+                fundo. O download é liberado após o pagamento de {PRICE}.
+              </li>
+            </ol>
+          </div>
+
           <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {proposals.map((p) => (
@@ -224,14 +285,28 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
               <RefinePanel
                 proposal={selected}
                 refining={refining}
+                paid={paid}
+                exporting={exporting}
                 onRefine={handleRefine}
                 onPickVersion={(i) => patch(selected.id, (x) => ({ ...x, currentIndex: i }))}
+                onResetToOriginal={handleResetToOriginal}
                 onDownload={handleDownload}
               />
             )}
           </div>
+          </>
         )}
       </section>
+
+      {selected && paywallFormat && (
+        <PaywallDialog
+          proposalName={selected.name}
+          price={PRICE}
+          processing={paying}
+          onPay={handlePay}
+          onClose={() => setPaywallFormat(null)}
+        />
+      )}
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-6xl px-5 py-8 text-xs text-muted-foreground">

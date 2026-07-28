@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { INDUSTRIES, STYLES, type Brief } from "./types";
+import { Spinner } from "./Spinner";
 
 type Props = {
   loading: boolean;
@@ -190,9 +191,10 @@ export function BriefForm({ loading, onSubmit }: Props) {
           <button
             type="submit"
             disabled={!valid || loading}
-            className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Analisando marca…" : "Gerar propostas"}
+            {loading && <Spinner />}
+            {loading ? "Analisando marca e gerando propostas…" : "Gerar propostas"}
           </button>
           <span className="text-xs text-muted-foreground">
             6 propostas em poucos minutos · IA especializada em identidade visual

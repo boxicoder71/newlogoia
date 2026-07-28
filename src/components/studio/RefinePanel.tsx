@@ -1,12 +1,16 @@
 import { useState } from "react";
 import type { Proposal } from "./types";
+import { Spinner } from "./Spinner";
 
 type Props = {
   proposal: Proposal;
   refining: boolean;
+  paid: boolean;
+  exporting: boolean;
   onRefine: (instruction: string) => void;
   onPickVersion: (index: number) => void;
-  onDownload: () => void;
+  onResetToOriginal: () => void;
+  onDownload: (format: "png" | "svg") => void;
 };
 
 const SUGGESTIONS = [
@@ -17,9 +21,20 @@ const SUGGESTIONS = [
   "Versão em preto e branco",
 ];
 
-export function RefinePanel({ proposal, refining, onRefine, onPickVersion, onDownload }: Props) {
+export function RefinePanel({
+  proposal,
+  refining,
+  paid,
+  exporting,
+  onRefine,
+  onPickVersion,
+  onResetToOriginal,
+  onDownload,
+}: Props) {
   const [text, setText] = useState("");
   const version = proposal.versions[proposal.currentIndex];
+  const hasEdits = proposal.versions.length > 1;
+  const ready = Boolean(version?.final) && !refining;
 
   function submit(instruction: string) {
     const value = instruction.trim();
@@ -45,9 +60,16 @@ export function RefinePanel({ proposal, refining, onRefine, onPickVersion, onDow
             }`}
           />
         ) : (
-          <span className="text-xs text-muted-foreground">Gerando…</span>
+          <span className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Spinner /> Gerando…
+          </span>
         )}
       </div>
+
+      <p className="rounded-md border border-border bg-background/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+        Ajustes são opcionais. Se já gostou desta proposta, siga direto para o download. Se pedir
+        um ajuste, você só paga depois de aprovar o resultado.
+      </p>
 
       {proposal.versions.length > 1 && (
         <div>
@@ -97,6 +119,7 @@ export function RefinePanel({ proposal, refining, onRefine, onPickVersion, onDow
       >
         <input
           value={text}
+          id="refine-input"
           maxLength={240}
           onChange={(e) => setText(e.target.value)}
           placeholder="Peça um ajuste em português…"
@@ -111,14 +134,54 @@ export function RefinePanel({ proposal, refining, onRefine, onPickVersion, onDow
         </button>
       </form>
 
-      <button
-        type="button"
-        onClick={onDownload}
-        disabled={!version?.final}
-        className="rounded-md border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10 disabled:opacity-40"
-      >
-        Baixar PNG em alta
-      </button>
+      {hasEdits && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={!ready}
+            onClick={() => onDownload("png")}
+            className="rounded-full border border-primary px-3 py-1 text-xs font-medium text-primary transition hover:bg-primary/10 disabled:opacity-40"
+          >
+            Gostei da alteração
+          </button>
+          <button
+            type="button"
+            disabled={refining}
+            onClick={() => document.getElementById("refine-input")?.focus()}
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+          >
+            Quero fazer outra alteração
+          </button>
+          <button
+            type="button"
+            disabled={refining}
+            onClick={onResetToOriginal}
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+          >
+            Voltar ao início
+          </button>
+        </div>
+      )}
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => onDownload("png")}
+          disabled={!ready || exporting}
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
+        >
+          {exporting && <Spinner />}
+          {paid ? "Baixar PNG sem fundo" : "Baixar PNG (pago)"}
+        </button>
+        <button
+          type="button"
+          onClick={() => onDownload("svg")}
+          disabled={!ready || exporting}
+          className="inline-flex items-center justify-center gap-2 rounded-md border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10 disabled:opacity-40"
+        >
+          {paid ? "Baixar SVG sem fundo" : "Baixar SVG (pago)"}
+        </button>
+      </div>
       <p className="text-[11px] leading-relaxed text-muted-foreground">
         Imagens geradas por IA incluem marca d'água invisível SynthID. Verifique a
         disponibilidade de registro da marca antes do uso comercial.
