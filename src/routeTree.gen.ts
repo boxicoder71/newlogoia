@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateLogoRouteImport } from './routes/api/generate-logo'
 import { Route as ApiAnalyzeBriefRouteImport } from './routes/api/analyze-brief'
@@ -17,6 +18,11 @@ import { Route as ApiAnalyzeBriefRouteImport } from './routes/api/analyze-brief'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const ApiAnalyzeBriefRoute = ApiAnalyzeBriefRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
@@ -50,18 +58,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sitemap.xml' | '/api/analyze-brief' | '/api/generate-logo'
+  fullPaths:
+    | '/'
+    | '/privacidade'
+    | '/sitemap.xml'
+    | '/api/analyze-brief'
+    | '/api/generate-logo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sitemap.xml' | '/api/analyze-brief' | '/api/generate-logo'
+  to:
+    | '/'
+    | '/privacidade'
+    | '/sitemap.xml'
+    | '/api/analyze-brief'
+    | '/api/generate-logo'
   id:
     | '__root__'
     | '/'
+    | '/privacidade'
     | '/sitemap.xml'
     | '/api/analyze-brief'
     | '/api/generate-logo'
@@ -69,6 +89,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAnalyzeBriefRoute: typeof ApiAnalyzeBriefRoute
   ApiGenerateLogoRoute: typeof ApiGenerateLogoRoute
@@ -81,6 +102,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -109,6 +137,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAnalyzeBriefRoute: ApiAnalyzeBriefRoute,
   ApiGenerateLogoRoute: ApiGenerateLogoRoute,
