@@ -7,6 +7,8 @@ type Props = {
   proposal: Proposal;
   refining: boolean;
   paid: boolean;
+  /** Arquivo limpo, entregue pelo servidor somente após o pagamento. */
+  cleanSrc?: string;
   exporting: boolean;
   onRefine: (instruction: string) => void;
   onPickVersion: (index: number) => void;
@@ -26,6 +28,7 @@ export function RefinePanel({
   proposal,
   refining,
   paid,
+  cleanSrc,
   exporting,
   onRefine,
   onPickVersion,
@@ -34,6 +37,7 @@ export function RefinePanel({
 }: Props) {
   const [text, setText] = useState("");
   const version = proposal.versions[proposal.currentIndex];
+  const displaySrc = cleanSrc ?? version?.src;
   const hasEdits = proposal.versions.length > 1;
   const ready = Boolean(version?.final) && !refining;
 
@@ -55,7 +59,7 @@ export function RefinePanel({
         {version ? (
           <>
             <img
-              src={version.src}
+              src={displaySrc}
               alt={`Versão atual da logo ${proposal.name}`}
               draggable={false}
               onContextMenu={(e) => e.preventDefault()}
@@ -74,7 +78,8 @@ export function RefinePanel({
 
       {!paid && (
         <p className="text-center text-[11px] text-muted-foreground">
-          A marca d'água some no arquivo final, após o pagamento.
+          A prévia é reduzida e marcada no servidor. O arquivo em alta resolução, sem marca
+          d'água, é liberado após o pagamento.
         </p>
       )}
 
