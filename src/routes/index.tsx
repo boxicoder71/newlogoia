@@ -61,7 +61,7 @@ function Index() {
   async function runProposal(p: Proposal, b: Brief, ref: string | null) {
     patch(p.id, (x) => ({ ...x, status: "streaming" }));
     try {
-      await streamLogo({ prompt: p.prompt, refImage: ref }, (src, final) => {
+      await streamLogo({ prompt: p.prompt, refImage: ref, fast: true }, (src, final) => {
         patch(p.id, (x) => {
           const versions = [...x.versions];
           versions[0] = { src, label: "Proposta inicial", final };
@@ -136,7 +136,7 @@ function Index() {
     const prompt = `Edite a logo enviada aplicando este ajuste: "${instruction}".
 Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e legível, fundo branco sólido, formas limpas de logo vetorial, legibilidade em tamanho pequeno e funcionamento em preto e branco. Não gere do zero: refine a imagem existente.`;
     try {
-      await streamLogo({ prompt, refImage: base.src }, (src, final) => {
+      await streamLogo({ prompt, refImage: base.src, fast: true }, (src, final) => {
         patch(id, (x) => {
           const versions = [...x.versions];
           versions[newIndex] = { src, label: instruction, final };
