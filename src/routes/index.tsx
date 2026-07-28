@@ -62,6 +62,21 @@ function Index() {
     setProposals((list) => list.map((p) => (p.id === id ? update(p) : p)));
   }
 
+  function selectProposal(p: Proposal) {
+    setSelectedId(p.id);
+    if (!brief) return;
+    void fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "selection",
+        industry: brief.industry,
+        style: brief.style,
+        archetype: p.archetype,
+      }),
+    }).catch(() => {});
+  }
+
   function briefSummary(b: Brief) {
     return `${b.company}${b.slogan ? ` — slogan "${b.slogan}"` : ""} · ${b.industry} · ${b.description} · público: ${b.audience} · palavras: ${b.keywords} · estilo: ${b.style} · cores: ${b.colors || "livre"}${b.avoid ? ` · evitar: ${b.avoid}` : ""}`;
   }

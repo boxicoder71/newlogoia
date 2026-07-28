@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiTrackRouteImport } from './routes/api/track'
 import { Route as ApiGenerateLogoRouteImport } from './routes/api/generate-logo'
 import { Route as ApiDownloadLogoRouteImport } from './routes/api/download-logo'
 import { Route as ApiCheckoutConfirmRouteImport } from './routes/api/checkout-confirm'
@@ -43,6 +44,11 @@ const ContatoRoute = ContatoRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTrackRoute = ApiTrackRouteImport.update({
+  id: '/api/track',
+  path: '/api/track',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiGenerateLogoRoute = ApiGenerateLogoRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
+  '/api/track': typeof ApiTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
+  '/api/track': typeof ApiTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/api/checkout-confirm': typeof ApiCheckoutConfirmRoute
   '/api/download-logo': typeof ApiDownloadLogoRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
+  '/api/track': typeof ApiTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/api/checkout-confirm'
     | '/api/download-logo'
     | '/api/generate-logo'
+    | '/api/track'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/api/checkout-confirm'
     | '/api/download-logo'
     | '/api/generate-logo'
+    | '/api/track'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/api/checkout-confirm'
     | '/api/download-logo'
     | '/api/generate-logo'
+    | '/api/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   ApiCheckoutConfirmRoute: typeof ApiCheckoutConfirmRoute
   ApiDownloadLogoRoute: typeof ApiDownloadLogoRoute
   ApiGenerateLogoRoute: typeof ApiGenerateLogoRoute
+  ApiTrackRoute: typeof ApiTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/track': {
+      id: '/api/track'
+      path: '/api/track'
+      fullPath: '/api/track'
+      preLoaderRoute: typeof ApiTrackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/generate-logo': {
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckoutConfirmRoute: ApiCheckoutConfirmRoute,
   ApiDownloadLogoRoute: ApiDownloadLogoRoute,
   ApiGenerateLogoRoute: ApiGenerateLogoRoute,
+  ApiTrackRoute: ApiTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
