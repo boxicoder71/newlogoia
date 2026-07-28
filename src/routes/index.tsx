@@ -12,7 +12,7 @@ import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { generateLogo, purchaseAndFetchClean } from "@/lib/generateLogo";
 import { downloadPng, downloadSvg } from "@/lib/exportLogo";
 
-const PRICE = "R$ 79,00";
+const PRICE = "R$ 49,00";
 
 export const Route = createFileRoute("/")({
   head: () => ({
