@@ -61,7 +61,7 @@ function Index() {
   async function runProposal(p: Proposal, b: Brief, ref: string | null) {
     patch(p.id, (x) => ({ ...x, status: "streaming" }));
     try {
-      await streamLogo({ prompt: p.prompt, refImage: ref }, (src, final) => {
+      await streamLogo({ prompt: p.prompt, refImage: ref, fast: true }, (src, final) => {
         patch(p.id, (x) => {
           const versions = [...x.versions];
           versions[0] = { src, label: "Proposta inicial", final };
