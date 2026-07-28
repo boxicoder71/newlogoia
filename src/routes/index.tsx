@@ -324,6 +324,7 @@ Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e
                 proposal={selected}
                 refining={refining}
                 paid={paid}
+                cleanSrc={currentAssetId ? cleanByAsset[currentAssetId] : undefined}
                 exporting={exporting}
                 onRefine={handleRefine}
                 onPickVersion={(i) => patch(selected.id, (x) => ({ ...x, currentIndex: i }))}
