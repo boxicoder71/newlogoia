@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateLogoRouteImport } from './routes/api/generate-logo'
+import { Route as ApiAnalyzeBriefRouteImport } from './routes/api/analyze-brief'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const ApiGenerateLogoRoute = ApiGenerateLogoRouteImport.update({
   path: '/api/generate-logo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnalyzeBriefRoute = ApiAnalyzeBriefRouteImport.update({
+  id: '/api/analyze-brief',
+  path: '/api/analyze-brief',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/analyze-brief': typeof ApiAnalyzeBriefRoute
   '/api/generate-logo': typeof ApiGenerateLogoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/generate-logo'
+  fullPaths: '/' | '/api/analyze-brief' | '/api/generate-logo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/generate-logo'
-  id: '__root__' | '/' | '/api/generate-logo'
+  to: '/' | '/api/analyze-brief' | '/api/generate-logo'
+  id: '__root__' | '/' | '/api/analyze-brief' | '/api/generate-logo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiAnalyzeBriefRoute: typeof ApiAnalyzeBriefRoute
   ApiGenerateLogoRoute: typeof ApiGenerateLogoRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateLogoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/analyze-brief': {
+      id: '/api/analyze-brief'
+      path: '/api/analyze-brief'
+      fullPath: '/api/analyze-brief'
+      preLoaderRoute: typeof ApiAnalyzeBriefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiAnalyzeBriefRoute: ApiAnalyzeBriefRoute,
   ApiGenerateLogoRoute: ApiGenerateLogoRoute,
 }
 export const routeTree = rootRouteImport
