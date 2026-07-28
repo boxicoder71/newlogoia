@@ -77,20 +77,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rebrand IA — Redesign de logos com IA" },
+      { title: "Rebrand IA — Redesign de logos profissional em minutos" },
       {
         name: "description",
-        content: "Redesign profissional de logos gerado por IA para empresas, em minutos.",
+        content: "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
       { name: "author", content: "Rebrand IA" },
-      { property: "og:title", content: "Rebrand IA — Redesign de logos com IA" },
+      { property: "og:title", content: "Rebrand IA — Redesign de logos profissional em minutos" },
       {
         property: "og:description",
-        content: "Redesign profissional de logos gerado por IA para empresas, em minutos.",
+        content: "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Rebrand IA — Redesign de logos profissional em minutos" },
+      { name: "twitter:description", content: "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f609213c-9be6-4a0c-bada-55a1940b7026/id-preview-b111b98d--e6a51e62-21e0-46d0-86c3-a05d6acf4ef8.lovable.app-1785212142075.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f609213c-9be6-4a0c-bada-55a1940b7026/id-preview-b111b98d--e6a51e62-21e0-46d0-86c3-a05d6acf4ef8.lovable.app-1785212142075.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

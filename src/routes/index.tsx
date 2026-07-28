@@ -19,11 +19,11 @@ export const Route = createFileRoute("/")({
         content:
           "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
-      { property: "og:title", content: "Rebrand IA — Redesign de logos em minutos" },
+      { property: "og:title", content: "Rebrand IA — Redesign de logos profissional em minutos" },
       {
         property: "og:description",
         content:
-          "Diagnóstico da sua logo atual, 6 propostas de redesign com qualidade de agência e ajustes por conversa.",
+          "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
