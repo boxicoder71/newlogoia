@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { BriefForm } from "@/components/studio/BriefForm";
 import { ProposalCard } from "@/components/studio/ProposalCard";
