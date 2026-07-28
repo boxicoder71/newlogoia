@@ -62,6 +62,10 @@ function Index() {
     setProposals((list) => list.map((p) => (p.id === id ? update(p) : p)));
   }
 
+  function briefSummary(b: Brief) {
+    return `${b.company}${b.slogan ? ` — slogan "${b.slogan}"` : ""} · ${b.industry} · ${b.description} · público: ${b.audience} · palavras: ${b.keywords} · estilo: ${b.style} · cores: ${b.colors || "livre"}${b.avoid ? ` · evitar: ${b.avoid}` : ""}`;
+  }
+
   async function runProposal(p: Proposal, b: Brief, ref: string | null) {
     patch(p.id, (x) => ({ ...x, status: "streaming" }));
     try {
@@ -69,6 +73,17 @@ function Index() {
         prompt: p.prompt,
         refImage: ref,
         fast: true,
+        expect: {
+          company: b.company,
+          slogan: b.slogan || null,
+          briefSummary: briefSummary(b),
+        },
+        meta: {
+          industry: b.industry,
+          style: b.style,
+          archetype: p.archetype,
+          kind: "generation",
+        },
       });
       patch(p.id, (x) => ({
         ...x,
@@ -111,6 +126,7 @@ function Index() {
         name: d.name,
         rationale: d.rationale,
         prompt: d.prompt,
+        archetype: d.archetype,
         versions: [],
         currentIndex: 0,
         favorite: false,
@@ -137,19 +153,44 @@ function Index() {
     setRefining(true);
     const id = selected.id;
     const newIndex = selected.versions.length;
+    // Todo o histórico da conversa vai junto: briefing + todos os ajustes já pedidos.
+    const previous = selected.versions
+      .slice(1, selected.currentIndex + 1)
+      .map((v, i) => `${i + 1}. ${v.label}`)
+      .join("\n");
     patch(id, (x) => ({
       ...x,
       versions: [...x.versions, { src: base.src, label: instruction, final: false }],
       currentIndex: newIndex,
       status: "streaming",
     }));
-    const prompt = `Edite a logo enviada aplicando este ajuste: "${instruction}".
-Mantenha a identidade visual, o nome "${brief.company}" com ortografia correta e legível, fundo branco sólido, formas limpas de logo vetorial, legibilidade em tamanho pequeno e funcionamento em preto e branco. Não gere do zero: refine a imagem existente.`;
+    const prompt = `Refine the attached logo. Do not start from scratch.
+
+Original brief: ${briefSummary(brief)}
+Creative direction of this proposal: ${selected.prompt}
+${previous ? `Adjustments already applied (all of them must remain in effect):\n${previous}` : "No previous adjustments."}
+
+New adjustment requested now: "${instruction}"
+
+Apply the new adjustment on top of every previous decision — never undo an earlier request. Keep the exact text "${brief.company}"${brief.slogan ? ` and the tagline "${brief.slogan}"` : " with no extra words"} spelled correctly and legible, solid white background, flat vector logo shapes, legible at small size and functional in black and white.`;
     try {
       const { assetId, preview } = await generateLogo({
         prompt,
         refAssetId: base.assetId ?? null,
         fast: true,
+        expect: {
+          company: brief.company,
+          slogan: brief.slogan || null,
+          briefSummary: briefSummary(brief),
+        },
+        meta: {
+          industry: brief.industry,
+          style: brief.style,
+          archetype: selected.archetype,
+          kind: "refinement",
+          detail: instruction,
+        },
+      });
       });
       patch(id, (x) => {
         const versions = [...x.versions];
