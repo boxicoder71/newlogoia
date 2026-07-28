@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { INDUSTRIES, STYLES, type Brief } from "./types";
 import { Spinner } from "./Spinner";
+import { PalettePicker } from "./PalettePicker";
 
 type Props = {
   loading: boolean;
@@ -175,19 +176,11 @@ export function BriefForm({ loading, onSubmit }: Props) {
           </div>
         </div>
         <div className="sm:col-span-2">
-          <label className={label} htmlFor="colors">
-            Cores (opcional)
-          </label>
-          <input
-            id="colors"
-            className={field}
-            maxLength={120}
-            value={brief.colors}
-            onChange={(e) => set("colors", e.target.value)}
-            placeholder="Deixe vazio para a IA sugerir"
-          />
+          <span className={label}>Cores (opcional)</span>
+          <PalettePicker value={brief.colors} onChange={(v) => set("colors", v)} />
         </div>
-        <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
+        <div className="sm:col-span-2">
+          <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
             disabled={!valid || loading}
@@ -199,6 +192,10 @@ export function BriefForm({ loading, onSubmit }: Props) {
           <span className="text-xs text-muted-foreground">
             6 propostas em poucos minutos · IA especializada em identidade visual
           </span>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Sem cartão de crédito · 6 propostas na primeira geração. Você só paga ao baixar.
+          </p>
         </div>
       </div>
     </form>
