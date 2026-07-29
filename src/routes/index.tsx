@@ -10,6 +10,7 @@ import { BeforeForm } from "@/components/studio/BeforeForm";
 import { GenerationProgress } from "@/components/studio/GenerationProgress";
 import type { Analysis, Brief, Proposal } from "@/components/studio/types";
 import { generateLogo, purchaseAndFetchClean } from "@/lib/generateLogo";
+import { PROPOSAL_COUNT } from "@/lib/logo-knowledge";
 import { downloadPng, downloadSvg } from "@/lib/exportLogo";
 
 const PRICE = "R$ 49,00";
