@@ -101,6 +101,19 @@ ${image ? "Uma logo atual foi enviada — analise-a criticamente." : "A empresa 
 
         if (!res.ok) {
           const text = await res.text().catch(() => "");
+          if (res.status === 402) {
+            return new Response(
+              "Os créditos de IA da conta acabaram. Recarregue os créditos do workspace para voltar a gerar propostas.",
+              { status: 402 },
+            );
+          }
+          if (res.status === 429) {
+            return new Response(
+              "A IA está sobrecarregada no momento. Tente novamente em alguns instantes.",
+              { status: 429 },
+            );
+          }
+          console.error("[analyze-brief] falha no gateway de IA:", res.status, text.slice(0, 300));
           return new Response(text || "Falha na análise", { status: res.status });
         }
 
