@@ -286,7 +286,7 @@ export function BriefForm({ loading, onSubmit }: Props) {
             <p className="mt-1 text-[11px] text-muted-foreground">
               {strength >= 80
                 ? "Briefing excelente — a IA tem tudo que precisa."
-                : "Quanto mais campos você preencher, mais precisas ficam as 6 propostas."}
+                : "Quanto mais campos você preencher, mais precisas ficam as 4 propostas."}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -299,11 +299,11 @@ export function BriefForm({ loading, onSubmit }: Props) {
             {loading ? "Analisando marca e gerando propostas…" : "Gerar propostas"}
           </button>
           <span className="text-xs text-muted-foreground">
-            6 propostas em poucos minutos · IA especializada em identidade visual
+            4 propostas em poucos minutos · IA especializada em identidade visual
           </span>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Sem cartão de crédito · 6 propostas na primeira geração. Você só paga ao baixar.
+            Sem cartão de crédito · 4 propostas na primeira geração. Você só paga ao baixar.
           </p>
         </div>
       </div>

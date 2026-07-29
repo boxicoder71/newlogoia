@@ -5,7 +5,7 @@ const POINTS = [
   },
   {
     title: "O que a IA devolve",
-    text: "Um diagnóstico da marca e 6 propostas de logo diferentes entre si, prontas para comparar.",
+    text: "Um diagnóstico da marca e 4 propostas de logo diferentes entre si, prontas para comparar.",
   },
   {
     title: "Quanto custa",

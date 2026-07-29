@@ -21,13 +21,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
+          "Envie sua logo atual, receba um diagnóstico de design e 4 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
       { property: "og:title", content: "Rebrand IA — Redesign de logos profissional em minutos" },
       {
         property: "og:description",
         content:
-          "Envie sua logo atual, receba um diagnóstico de design e 6 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
+          "Envie sua logo atual, receba um diagnóstico de design e 4 propostas de redesign geradas por IA, com refinamento por conversa e download em alta resolução.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -136,7 +136,7 @@ function Index() {
       if (!res.ok) throw new Error(await res.text());
       const data = (await res.json()) as Analysis;
       setAnalysis(data);
-      const list: Proposal[] = data.directions.slice(0, 6).map((d, i) => ({
+      const list: Proposal[] = data.directions.slice(0, PROPOSAL_COUNT).map((d, i) => ({
         id: `p${i}-${Date.now()}`,
         name: d.name,
         rationale: d.rationale,
@@ -304,7 +304,7 @@ Apply the new adjustment on top of every previous decision — never undo an ear
             active={analyzing || generating}
             analyzing={analyzing}
             done={doneCount}
-            total={proposals.length || 6}
+            total={proposals.length || PROPOSAL_COUNT}
           />
         </div>
 
