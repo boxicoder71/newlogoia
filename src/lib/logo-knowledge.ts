@@ -1,5 +1,5 @@
 // Base de conhecimento de direção de arte: diretrizes por setor e
-// arquétipos que garantem diversidade estrutural entre as 6 propostas.
+// arquétipos que garantem diversidade estrutural entre as propostas.
 
 export type Archetype = {
   id: string;
@@ -9,7 +9,10 @@ export type Archetype = {
   directive: string;
 };
 
-export const ARCHETYPES: Archetype[] = [
+/** Quantidade de propostas geradas por briefing. */
+export const PROPOSAL_COUNT = 4;
+
+export const ALL_ARCHETYPES: Archetype[] = [
   {
     id: "symbol-wordmark",
     composition: "Símbolo + tipografia",
@@ -53,6 +56,9 @@ export const ARCHETYPES: Archetype[] = [
       "monochrome abstract mark: one reduced conceptual geometric symbol in a single ink colour on white, with the company name in the same colour; no accent colour at all, maximum restraint",
   },
 ];
+
+/** Arquétipos efetivamente usados na geração (diversidade estrutural). */
+export const ARCHETYPES: Archetype[] = ALL_ARCHETYPES.slice(0, PROPOSAL_COUNT);
 
 /** Traduz o estilo escolhido no formulário para instrução de imagem. */
 export const STYLE_DIRECTIVES: Record<string, string> = {

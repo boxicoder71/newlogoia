@@ -1,6 +1,6 @@
 const STEPS = [
   { n: "1", title: "Conte sobre a marca", text: "Setor, público e 3 palavras que descrevem a empresa." },
-  { n: "2", title: "Receba 6 propostas", text: "Geradas em poucos minutos pela IA, a partir do diagnóstico." },
+  { n: "2", title: "Receba 4 propostas", text: "Geradas em poucos minutos pela IA, a partir do diagnóstico." },
   { n: "3", title: "Refine e baixe", text: "Ajuste por conversa e exporte em alta resolução, PNG e SVG." },
 ];
 

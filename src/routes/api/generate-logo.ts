@@ -14,7 +14,7 @@ type Body = {
   meta?: { industry?: string; style?: string; archetype?: string; kind?: "generation" | "refinement"; detail?: string };
 };
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 2;
 
 function extractBase64(json: unknown): string | null {
   const j = json as {

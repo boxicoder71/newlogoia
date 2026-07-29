@@ -37,7 +37,7 @@ export const Route = createFileRoute("/termos")({
       <Section title="1. O serviço">
         <p>
           O Rebrand IA gera propostas de logo a partir de um briefing e, opcionalmente, da sua logo
-          atual, usando modelos de inteligência artificial. Você recebe 6 propostas, pode pedir
+          atual, usando modelos de inteligência artificial. Você recebe 4 propostas, pode pedir
           ajustes por conversa e baixar o arquivo final após o pagamento.
         </p>
       </Section>
