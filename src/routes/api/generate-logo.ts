@@ -78,6 +78,19 @@ export const Route = createFileRoute("/api/generate-logo")({
           });
           if (!upstream.ok) {
             const body = await upstream.text().catch(() => "");
+            if (upstream.status === 402) {
+              return new Response(
+                "Os créditos de IA da conta acabaram. Recarregue os créditos do workspace para voltar a gerar propostas.",
+                { status: 402 },
+              );
+            }
+            if (upstream.status === 429) {
+              return new Response(
+                "A IA está sobrecarregada no momento. Tente novamente em alguns instantes.",
+                { status: 429 },
+              );
+            }
+            console.error("[generate-logo] falha no gateway de IA:", upstream.status, body.slice(0, 300));
             return new Response(body || "Falha na geração", { status: upstream.status });
           }
           const image = extractBase64(await upstream.json());
